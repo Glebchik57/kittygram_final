@@ -9,7 +9,7 @@ SECRET_KEY = os.getenv('TOKEN', 'django-insecure-123')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['158.160.20.154', '127.0.0.1', 'localhost', 'kitty-gram.hopto.org']
+ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
