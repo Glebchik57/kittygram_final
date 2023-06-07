@@ -1,26 +1,73 @@
-#  Как работать с репозиторием финального задания
+#  Kittygram
+## _Социальная сеть для обмена фотографиями любимых питомцев_
 
-## Что нужно сделать
+## Технологии
 
-Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
+ - Python 3.9
+ - Django==3.2.3
+ - Docker
+ - Nginx
+ - gunicorn
+ - PostgreSQL
+ - GitHub Actions
 
-## Как проверить работу с помощью автотестов
-
-В корне репозитория создайте файл tests.yml со следующим содержимым:
-```yaml
-repo_owner: ваш_логин_на_гитхабе
-kittygram_domain: полная ссылка (https://доменное_имя) на ваш проект Kittygram
-taski_domain: полная ссылка (https://доменное_имя) на ваш проект Taski
-dockerhub_username: ваш_логин_на_докерхабе
+## Как запустить проект на локальный компьютер:
+Клонировать репозиторий и перейти в него в командной строке:
 ```
+git@github.com:Glebchik57/kittygram_final.git
+```
+Подключиться к удалённому серверу:
+```
+ssh -i путь_до_файла_с_SSH_ключом/название_файла_с_SSH_ключом имя_пользователя@ip_адрес_сервера 
+```
+Установить Docker на сервер:
+```
+sudo apt update
+sudo apt install curl
+curl -fSL https://get.docker.com -o get-docker.sh
+sudo sh ./get-docker.sh
+sudo apt-get install docker-compose-plugin
+```
+Скопировать на сервер файл docker-compose.production.yml:
+```
+ scp -i path_to_SSH/SSH_name docker-compose.production.yml username@server_ip:/home/username/taski/docker-compose.production.yml
+ _или сделать это вручную_
+```
+Создать файл .env:
+```
+sudo touch .env
+```
+В файле .env прописать следующие: 
+```
+SECRET_KEY
+POSTGRES_USER
+POSTGRES_PASSWORD
+POSTGRES_DB
+DB_HOST=db
+DB_PORT=5432
+```
+Запустить Docker Compose в режиме демона:
+```
+sudo docker compose -f docker-compose.production.yml up -d
+```
+Выполнить миграции, соберите статические файлы бэкенда:
+```
+sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /static/static/
+```
+Откоректировать конфиг nginx на сервере:
+```
+sudo nano /etc/nginx/sites-enabled/default
+```
+Должно быть так:
+```
+ location / {
+        proxy_set_header Host $http_host;
+        proxy_pass http://127.0.0.1:8000;
+    }
+```
+Поздравляю! теперь у вас есть сайт, где вы можете делиться с миром фотографиями своих котов.
 
-Скопируйте содержимое файла `.github/workflows/main.yml` в файл `kittygram_workflow.yml` в корневой директории проекта.
-
-Для локального запуска тестов создайте виртуальное окружение, установите в него зависимости из backend/requirements.txt и запустите в корневой директории проекта `pytest`.
-
-## Чек-лист для проверки перед отправкой задания
-
-- Проект Taski доступен по доменному имени, указанному в `tests.yml`.
-- Проект Kittygram доступен по доменному имени, указанному в `tests.yml`.
-- Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`.
+## Автор:
+_Севостьянов Глеб_
