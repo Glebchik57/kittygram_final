@@ -1,6 +1,8 @@
 #  Kittygram
 ## _Социальная сеть для обмена фотографиями любимых питомцев_
 
+![badge](https://github.com/Glebchik57/kittygram_final/actions/workflows/main.yml/badge.svg)
+
 ## Технологии
 
  - Python 3.9
